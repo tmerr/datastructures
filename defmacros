@@ -1,0 +1,25 @@
+// the default prefix is nothing
+#ifndef PREFIX
+#define NOPREFIX
+#define PREFIX
+#endif
+
+// see http://stackoverflow.com/a/1489985/1546343
+// for why both PASTE1 and PASTE2 are necessary.
+#define PASTE2(x, y)         x ## y
+#define PASTE1(x, y)         PASTE2(x, y)
+
+#define LINKEDLIST           PASTE1(PREFIX, linkedlist)
+#define HASHTABLE            PASTE1(PREFIX, hashtable)
+
+#define HASHTABLE_CREATE     PASTE1(PREFIX, hashtable_create)
+#define HASHTABLE_INSERT     PASTE1(PREFIX, hashtable_insert)
+#define HASHTABLE_REMOVE     PASTE1(PREFIX, hashtable_remove)
+#define HASHTABLE_GET        PASTE1(PREFIX, hashtable_get)
+#define HASHTABLE_DESTROY    PASTE1(PREFIX, hashtable_destroy)
+#define HASHTABLE_SIZE       PASTE1(PREFIX, hashtable_size)
+
+#define HASHTABLE_IT         PASTE1(PREFIX, hashtable_it)
+#define HASHTABLE_IT_CREATE  PASTE1(PREFIX, hashtable_it_create)
+#define HASHTABLE_IT_NEXT    PASTE1(PREFIX, hashtable_it_next)
+
