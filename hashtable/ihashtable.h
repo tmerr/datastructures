@@ -1,4 +1,5 @@
 #ifndef IHASHTABLE_H
+#define IHASHTABLE_H
 
 #include "stdint.h"
 
