@@ -1,5 +1,6 @@
 #include <functional>
 #include <vector>
+#include <cstddef>
 
 #ifndef HEAP_HPP
 #define HEAP_HPP
@@ -34,9 +35,17 @@ public:
     // time: n * lg n
     void heapSort();
 
-    // Get a reference to the internal array.
+    // Return a reference to the internal array.
     std::vector<T> & arrayRef();
+
+    // Return the number of nodes in the heap.
+    std::size_t getHeapSize();
+
+    // Verify the heap property.
+    bool verifyHeapProperty();
+
 private:
+    std::size_t heapSize;
     std::vector<T> array;
     std::function<bool(T, T)> comp;
 };
