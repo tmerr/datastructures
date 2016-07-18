@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <algorithm>
 #include <utility>
-#include <iostream>
 
 #ifndef HEAP_HPP
 #define HEAP_HPP
@@ -12,16 +11,17 @@ template <class T>
 class Heap {
 public:
     // Construct an empty heap. The comp function returns true if the first arg
-    // is greater than the second arg.
+    // should be higher in the heap than the second arg.
     Heap(std::function<bool(T, T)> comp) {
         this->heapSize = 0;
         this->comp = comp;
+        // use a placeholder for position 0.
         array.emplace(array.begin());
     }
 
     // Construct a heap from a vector and consume it in the process, aka heapify.
-    // The comp function returns true if the first arg is greater than the second
-    // arg.
+    // The comp function returns true if the first arg should be higher in the heap
+    // than the second arg.
     // time: n
     Heap(std::vector<T> array, std::function<bool(T, T)> comp) {
         this->heapSize = array.size();
@@ -43,46 +43,31 @@ public:
         }
     }
 
-    // Move a node down until it is ordered with respect to its children.
-    // time: lg n
-    void bubble_down(std::size_t i) {
-        std::size_t left = i * 2;
-        std::size_t right = i * 2 + 1;
-
-        std::size_t bigger;
-        if (left <= heapSize && right <= heapSize) {
-            bigger = comp(array[left], array[right]) ? left : right;
-        } else if (left <= heapSize) {
-            bigger = left;
-        } else if (right <= heapSize) {
-            bigger = right;
-        } else {
-            return;
-        }
-
-        if (comp(array[bigger], array[i])) {
-            // swap
-            T tmp = array[i];
-            array[i] = array[bigger];
-            array[bigger] = tmp;
-
-            bubble_down(bigger);
-        }
-    }
-
-    // Move a node up until it is ordered with respect to its parent.
-    // time: lg n
-    void bubble_up(std::size_t i) {
-
-    }
-
     // Insert an element, preserving the heap property.
     // time: lg n
-    void insert(T elem);
+    void insert(T elem) {
+        array.push_back(elem);
+        ++heapSize;
+        bubble_up(heapSize);
+    }
 
     // Pop off the top element, preserving the heap property.
+    // time: lg n
+    T pop() {
+        T result = array[1];
+        array[1] = array[heapSize];
+        array.pop_back();
+        --heapSize;
+        bubble_down(1);
+
+        return result;
+    }
+
+    // Peek at the top element.
     // time: constant
-    T pop();
+    T peek() {
+        return array[1];
+    }
 
     // Heap sort the internal array
     // time: n * lg n
@@ -106,6 +91,7 @@ public:
     }
 
     // Return a reference to the internal array.
+    // Element 0 in the array is a dummy.
     std::vector<T> & arrayRef() {
         return this->array;
     }
@@ -132,6 +118,51 @@ public:
     }
 
 private:
+    // Move a node down until it is ordered correctly.
+    // time: lg n
+    void bubble_down(std::size_t i) {
+        std::size_t left = i * 2;
+        std::size_t right = i * 2 + 1;
+
+        std::size_t bigger;
+        if (left <= heapSize && right <= heapSize) {
+            bigger = comp(array[left], array[right]) ? left : right;
+        } else if (left <= heapSize) {
+            bigger = left;
+        } else if (right <= heapSize) {
+            bigger = right;
+        } else {
+            return;
+        }
+
+        if (comp(array[bigger], array[i])) {
+            // swap
+            T tmp = array[i];
+            array[i] = array[bigger];
+            array[bigger] = tmp;
+
+            bubble_down(bigger);
+        }
+    }
+
+    // Move a node up until it is ordered correctly.
+    // time: lg n
+    void bubble_up(std::size_t i) {
+        if (i == 1) {
+            return;
+        }
+
+        std::size_t parent = i / 2;
+        if (comp(array[i], array[parent])) {
+            // swap
+            T tmp = array[i];
+            array[i] = array[parent];
+            array[parent] = tmp;
+
+            bubble_up(parent);
+        }
+    }
+
     std::size_t heapSize;
     std::vector<T> array;
     std::function<bool(T, T)> comp;

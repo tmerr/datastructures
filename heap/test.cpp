@@ -49,6 +49,25 @@ void testHeapifySomething() {
     }
 }
 
+void testPriorityQueue() {
+    Heap<int32_t> heap(comp);
+    heap.insert(3);
+    heap.insert(1);
+    heap.insert(35);
+    heap.insert(15);
+    heap.insert(3);
+
+    std::vector<int32_t> expected_stack {35, 15, 3, 3, 1};
+    while (heap.getHeapSize() != 0) {
+        if (heap.pop() == expected_stack.back()) {
+            std::cout << "  pqueue value PASS" << std::endl;
+        } else {
+            std::cout << "  pqueue value FAIL" << std::endl;
+        }
+        expected_stack.pop_back();
+    }
+}
+
 int main() {
     std::cout << "testing!" << std::endl;
     testConstruct();
@@ -59,6 +78,8 @@ int main() {
     std::cout << "third done" << std::endl;
     testHeapSort();
     std::cout << "fourth done" << std::endl;
+    testPriorityQueue();
+    std::cout << "fifth done" << std::endl;
 
     return 0;
 }
