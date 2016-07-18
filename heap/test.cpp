@@ -22,14 +22,22 @@ void testHeapifyNothing() {
 void testHeapifySomething() {
     std::vector<int32_t> something {3, 2, 5, 7, 6, 2, 6, 4, 2, 9};
     Heap<int32_t> heap(something, comp);
-    if (!heap.verifyHeapProperty()) {
-        std::cout << "test failed: heap property violated" << std::endl;
+    if (heap.verifyHeapProperty()) {
+        std::cout << "  heap property PASS" << std::endl;
+    } else {
+        std::cout << "  heap property FAIL" << std::endl;
+    }
+    if (heap.getHeapSize() != 10) {
+        std::cout << "  wrong heap size" << std::endl;
     }
 }
 
 int main() {
+    std::cout << "testing!" << std::endl;
     testConstruct();
+    std::cout << "first done" << std::endl;
     testHeapifyNothing();
+    std::cout << "second done" << std::endl;
     testHeapifySomething();
 
     return 0;
