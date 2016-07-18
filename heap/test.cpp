@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
 
 using std::int32_t;
 
@@ -17,6 +18,22 @@ void testConstruct() {
 void testHeapifyNothing() {
     std::vector<int32_t> nothing;
     Heap<int32_t> heap(nothing, comp);
+}
+
+void testHeapSort() {
+    std::vector<int32_t> initial {9, 1, 6, 3, 10, 5, 2, 7, 8, 0, 4};
+    Heap<int32_t> heap(initial, comp);
+    heap.heapSort();
+
+    auto ref = heap.arrayRef();
+
+    std::vector<int32_t> expected {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    if (ref.size() - 1 == expected.size() &&
+        std::equal(ref.begin() + 1, ref.end(), expected.begin())) {
+        std::cout << "  heapsort PASS" << std::endl;
+    } else {
+        std::cout << "  heapsort FAIL" << std::endl;
+    }
 }
 
 void testHeapifySomething() {
@@ -39,6 +56,9 @@ int main() {
     testHeapifyNothing();
     std::cout << "second done" << std::endl;
     testHeapifySomething();
+    std::cout << "third done" << std::endl;
+    testHeapSort();
+    std::cout << "fourth done" << std::endl;
 
     return 0;
 }
