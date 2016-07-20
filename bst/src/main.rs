@@ -1,59 +1,89 @@
-use std::cmp::Ordering;
+type OBox<T> = Option<Box<T>>;
 
-enum BST<K: Ord + Clone, D: Clone> {
-    Empty,
-    Full(K, D, Box<BST<K, D>>, Box<BST<K, D>>)
+struct Node<K: Ord + Clone, D: Clone> {
+    key: K,
+    data: D,
+    left: OBox<Node<K, D>>,
+    right: OBox<Node<K, D>>
+}
+
+struct BST<K: Ord + Clone, D: Clone> {
+    root: OBox<Node<K, D>>
 }
 
 impl<K: Ord + Clone, D: Clone> BST<K, D> {
     fn new() -> BST<K, D> {
-        BST::Empty
+        BST { root: None }
     }
 
     fn insert(&mut self, k: K, d: D) {
-        if let BST::Full(ref key, _, ref mut left, ref mut right) = *self {
-            if k < *key {
-                left.insert(k, d);
+        fn helper<K2: Ord + Clone, D2: Clone>(n: &mut OBox<Node<K2, D2>>, k: K2, d: D2) {
+            if let Some(ref mut boxed) = *n {
+                let ref mut node = *boxed;
+                if k < node.key {
+                    helper(&mut node.left, k, d);
+                } else {
+                    helper(&mut node.right, k, d);
+                }
             } else {
-                right.insert(k, d);
+                *n = Some(Box::new(Node { key: k, data: d, left: None, right: None }));
             }
-        } else {
-            *self = BST::Full(k, d, Box::new(BST::Empty), Box::new(BST::Empty));
         }
+        helper(&mut self.root, k, d);
     }
 
-    fn search(&self, k: K) -> Option<D> {
-        if let BST::Full(ref key, ref data, ref left, ref right) = *self {
-            match k.cmp(&key) {
-                Ordering::Equal => Some(data.clone()),
-                Ordering::Less => (*left).search(k),
-                Ordering::Greater => (*right).search(k)
+    fn search(&self, target: K) -> Option<D> {
+        if let Some(ref boxed) = self.root {
+            let mut cursor: &Node<K, D> = boxed;
+            loop {
+                if target == cursor.key {
+                    return Some(cursor.data.clone());
+                } else {
+                    let side = if target < cursor.key {
+                                   &cursor.left
+                               } else {
+                                   &cursor.right
+                               };
+                    if let Some(ref boxed) = *side {
+                        cursor = boxed;
+                    } else {
+                        return None;
+                    }
+                }
             }
         } else {
-            None
+            return None;
         }
     }
 
     fn minimum(&self) -> Option<(K, D)> {
-        let mut node = self;
-        while let BST::Full(ref key, ref data, ref left, _) = *node {
-            if let BST::Empty = **left {
-                return Some((key.clone(), data.clone()));
+        if let Some(ref boxed) = self.root {
+            let mut cursor: &Node<K, D> = boxed;
+            loop {
+                if let Some(ref boxed) = cursor.left {
+                    cursor = boxed;
+                } else {
+                    return Some((cursor.key.clone(), cursor.data.clone()));
+                }
             }
-            node = left;
+        } else {
+            return None;
         }
-        return None;
     }
 
     fn maximum(&self) -> Option<(K, D)> {
-        let mut node = self;
-        while let BST::Full(ref key, ref data, _, ref right) = *node {
-            if let BST::Empty = **right {
-                return Some((key.clone(), data.clone()));
+        if let Some(ref boxed) = self.root {
+            let mut cursor: &Node<K, D> = boxed;
+            loop {
+                if let Some(ref boxed) = cursor.right {
+                    cursor = boxed;
+                } else {
+                    return Some((cursor.key.clone(), cursor.data.clone()));
+                }
             }
-            node = right;
+        } else {
+            return None;
         }
-        return None;
     }
 }
 
