@@ -85,6 +85,21 @@ impl<K: Ord, D> BST<K, D> {
             return None;
         }
     }
+
+    fn inorder<F>(&self, f: &F)
+        where F : Fn((&K, &D)) {
+
+        fn recurse<K2: Ord, D2, F2>(node: &OBox<Node<K2, D2>>, f: &F2)
+            where F2: Fn((&K2, &D2)) {
+
+            if let Some(ref boxed) = *node {
+                recurse(&(*boxed).left, f);
+                f((&(*boxed).key, &(*boxed).data));
+                recurse(&(*boxed).right, f);
+            }
+        }
+        recurse(&self.root, f);
+    }
 }
 
 fn main() {
@@ -102,21 +117,21 @@ mod tests {
         for &i in data.iter() {
             bst.insert(i, i);
         }
-        if let Some((i, _)) = bst.minimum() {
+        if let Some((&i, _)) = bst.minimum() {
             assert!(i == 1, "minimum failed: wrong value");
         } else {
             panic!("minimum failed: no minimum");
         }
-        if let Some((i, _)) = bst.maximum() {
+        if let Some((&i, _)) = bst.maximum() {
             assert!(i == 11, "maximum failed: wrong value");
         } else {
             panic!("maximum failed: no maximum");
         }
 
         for &i in data.iter() {
-            assert!(bst.search(i).is_some());
+            assert!(bst.search(&i).is_some());
         }
-        assert!(bst.search(69).is_none());
+        assert!(bst.search(&69).is_none());
     }
 
     #[test]
@@ -124,6 +139,19 @@ mod tests {
         let bst: BST<u8, u8> = BST::new();
         assert!(bst.minimum().is_none());
         assert!(bst.maximum().is_none());
-        assert!(bst.search(5).is_none());
+        assert!(bst.search(&5).is_none());
+    }
+
+    #[test]
+    fn test_inorder() {
+        let data = [4, 9, 8, 6, 0, 5, 1, 7, 2, 3];
+        let mut bst = BST::new();
+        for &i in data.iter() {
+            bst.insert(i, i);
+        }
+        fn do_something(_: (&i32, &i32)) {
+            println!("I need to make this test better");
+        }
+        bst.inorder(&do_something);
     }
 }
