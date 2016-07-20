@@ -1,23 +1,23 @@
 type OBox<T> = Option<Box<T>>;
 
-struct Node<K: Ord + Clone, D: Clone> {
+struct Node<K: Ord, D> {
     key: K,
     data: D,
     left: OBox<Node<K, D>>,
     right: OBox<Node<K, D>>
 }
 
-struct BST<K: Ord + Clone, D: Clone> {
+struct BST<K: Ord, D> {
     root: OBox<Node<K, D>>
 }
 
-impl<K: Ord + Clone, D: Clone> BST<K, D> {
+impl<K: Ord, D> BST<K, D> {
     fn new() -> BST<K, D> {
         BST { root: None }
     }
 
     fn insert(&mut self, k: K, d: D) {
-        fn helper<K2: Ord + Clone, D2: Clone>(n: &mut OBox<Node<K2, D2>>, k: K2, d: D2) {
+        fn helper<K2: Ord, D2>(n: &mut OBox<Node<K2, D2>>, k: K2, d: D2) {
             if let Some(ref mut boxed) = *n {
                 let ref mut node = *boxed;
                 if k < node.key {
@@ -32,14 +32,14 @@ impl<K: Ord + Clone, D: Clone> BST<K, D> {
         helper(&mut self.root, k, d);
     }
 
-    fn search(&self, target: K) -> Option<D> {
+    fn search(&self, target: &K) -> Option<&D> {
         if let Some(ref boxed) = self.root {
             let mut cursor: &Node<K, D> = boxed;
             loop {
-                if target == cursor.key {
-                    return Some(cursor.data.clone());
+                if *target == cursor.key {
+                    return Some(&cursor.data);
                 } else {
-                    let side = if target < cursor.key {
+                    let side = if *target < cursor.key {
                                    &cursor.left
                                } else {
                                    &cursor.right
@@ -56,14 +56,14 @@ impl<K: Ord + Clone, D: Clone> BST<K, D> {
         }
     }
 
-    fn minimum(&self) -> Option<(K, D)> {
+    fn minimum(&self) -> Option<(&K, &D)> {
         if let Some(ref boxed) = self.root {
             let mut cursor: &Node<K, D> = boxed;
             loop {
                 if let Some(ref boxed) = cursor.left {
                     cursor = boxed;
                 } else {
-                    return Some((cursor.key.clone(), cursor.data.clone()));
+                    return Some((&cursor.key, &cursor.data));
                 }
             }
         } else {
@@ -71,14 +71,14 @@ impl<K: Ord + Clone, D: Clone> BST<K, D> {
         }
     }
 
-    fn maximum(&self) -> Option<(K, D)> {
+    fn maximum(&self) -> Option<(&K, &D)> {
         if let Some(ref boxed) = self.root {
             let mut cursor: &Node<K, D> = boxed;
             loop {
                 if let Some(ref boxed) = cursor.right {
                     cursor = boxed;
                 } else {
-                    return Some((cursor.key.clone(), cursor.data.clone()));
+                    return Some((&cursor.key, &cursor.data));
                 }
             }
         } else {
