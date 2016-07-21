@@ -86,11 +86,11 @@ impl<K: Ord, D> BST<K, D> {
         }
     }
 
-    fn inorder<F>(&self, f: &F)
-        where F : Fn((&K, &D)) {
+    fn inorder<F>(&self, f: &mut F)
+        where F : FnMut((&K, &D)) {
 
-        fn recurse<K2: Ord, D2, F2>(node: &OBox<Node<K2, D2>>, f: &F2)
-            where F2: Fn((&K2, &D2)) {
+        fn recurse<K2: Ord, D2, F2>(node: &OBox<Node<K2, D2>>, f: &mut F2)
+            where F2: FnMut((&K2, &D2)) {
 
             if let Some(ref boxed) = *node {
                 recurse(&(*boxed).left, f);
@@ -149,9 +149,10 @@ mod tests {
         for &i in data.iter() {
             bst.insert(i, i);
         }
-        fn do_something(_: (&i32, &i32)) {
-            println!("I need to make this test better");
-        }
-        bst.inorder(&do_something);
+
+        let mut v = vec![];
+        bst.inorder(&mut |(&x, &_)| v.push(x));
+
+        assert_eq!(v, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
     }
 }
