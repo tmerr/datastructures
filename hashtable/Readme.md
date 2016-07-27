@@ -11,8 +11,8 @@ There are two common ways to make generic hash tables in C. One is to use the `v
 
 This implementation takes a different approach. It's terrible for usability but it avoids klib's issues. To create a specialization of a hash map you need to create a `.h` and a `.c` file. The header looks like
 
-    #ifndef IHASHTABLE_H
-    #define IHASHTABLE_H
+    #ifndef XHASHTABLE_H
+    #define XHASHTABLE_H
 
     #include "stdint.h"
 
@@ -51,4 +51,4 @@ They act like normal normal `.h` and `.c` files with the following functions. No
 | xhashtable_it xhashtable_it_create(xhashtable \*table) | Create an iterator for the given hash table. | 
 | bool xhashtable_it_next(xhashtable_it \*it, KTYPE \*outKey, VTYPE \*outVal) | Gets the next element from the iterator. Returns false (and leaves outKey and outVal unmodified) when the end of the iterator is reached. | 
 
-This was as much about generics as it was about hash tables so I haven't got around to benchmarking and am not too worried about performance overall. Also, disclaimer, the prime.c found in this repository is [from the internet](http://stackoverflow.com/a/5694432/1546343).
+This was as much about generics as it was about hash tables so I haven't got around to benchmarking and am not too worried about performance overall. Also, disclaimer, the prime.c found in this repository is [from the internet](http://stackoverflow.com/a/5694432/1546343). Also, see test.c for example usage.
